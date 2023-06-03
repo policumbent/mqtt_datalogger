@@ -1,4 +1,4 @@
-# Miriam Datalogger
+# Miriam and Sara Datalogger
 this is a datalogger for Miriam (the live telemetry interface)
 
 It can be run on any computer and saves the data published by Miriam on the different topics
