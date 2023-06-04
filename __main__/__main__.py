@@ -43,20 +43,26 @@ topics_sara = {
 
 
 
-def mqtt_callback(client, userdata, msg):
+def mqtt_callback_myriam(client, userdata, msg):
     payload = msg.payload.decode()
     topic = msg.topic
     logging.info(f"received {payload} on {topic}")
     topics_miriam[topic] = payload
 
+def mqtt_callback_sara(client, userdata, msg):
+    payload = msg.payload.decode()
+    topic = msg.topic
+    logging.info(f"received {payload} on {topic}")
+    topics_sara[topic] = payload
+
 
 def main():
     datalogger_miriam = Logger("../log/miriam/miriam_datalogger", list(topics_miriam.keys()))
-    connection_miriam = MqttHandler("miriam_datalogger_01", "broker.hivemq.com", 1883, [(t, 0) for t in topics_miriam.keys()], mqtt_callback)
+    connection_miriam = MqttHandler("miriam_datalogger_01", "broker.hivemq.com", 1883, [(t, 0) for t in topics_miriam.keys()], mqtt_callback_myriam)
 
     datalogger_sara = Logger("../log/sara/sara_datalogger", list(topics_sara.keys()))
     connection_sara = MqttHandler("sara_datalogger_01", "broker.hivemq.com", 1883,
-                                    [(t, 0) for t in topics_sara.keys()], mqtt_callback)
+                                    [(t, 0) for t in topics_sara.keys()], mqtt_callback_sara)
 
     start = time.time()
     while True:
