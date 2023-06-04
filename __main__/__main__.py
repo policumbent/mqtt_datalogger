@@ -5,7 +5,7 @@ import logging
 import time
 
 
-topics = {
+topics_miriam = {
     "Taurus/bikedata/latitude": '-1',
     "Taurus/bikedata/longitude": '-1',
     "Taurus/bikedata/altitude": '-1',
@@ -28,6 +28,18 @@ topics = {
     "Taurus/bikedata/limit_switch": '-1'
 }
 
+topics_sara = {
+    "Policumbent/weather/ws1/timestamp": '-1',
+    "Policumbent/weather/ws1/temperature": '-1',
+    "Policumbent/weather/ws1/humidity": '-1',
+    "Policumbent/weather/ws1/pressure": '-1',
+    "Policumbent/weather/ws1/speed": '-1',
+    "Policumbent/weather/ws1/direction": '-1',
+    "Policumbent/weather/ws1/latitude": '-1',
+    "Policumbent/weather/ws1/longitude": '-1',
+    "Policumbent/weather/ws1/altitude": '-1',
+}
+
 
 
 
@@ -35,20 +47,26 @@ def mqtt_callback(client, userdata, msg):
     payload = msg.payload.decode()
     topic = msg.topic
     logging.info(f"received {payload} on {topic}")
-    topics[topic] = payload
+    topics_miriam[topic] = payload
 
 
 def main():
-    datalogger = Logger("../log/miriam_datalogger", list(topics.keys()))
-    connection = MqttHandler("miriam_datalogger_01", "broker.hivemq.com", 1883, [(t, 0) for t in topics.keys()], mqtt_callback)
+    datalogger_miriam = Logger("../log/miriam/miriam_datalogger", list(topics_miriam.keys()))
+    connection_miriam = MqttHandler("miriam_datalogger_01", "broker.hivemq.com", 1883, [(t, 0) for t in topics_miriam.keys()], mqtt_callback)
+
+    datalogger_sara = Logger("../log/sara/miriam_datalogger", list(topics_sara.keys()))
+    connection_sara = MqttHandler("sara_datalogger_01", "broker.hivemq.com", 1883,
+                                    [(t, 0) for t in topics_sara.keys()], mqtt_callback)
 
     start = time.time()
     while True:
         end = time.time()
         if end - start >= 5:
             start = end
-            datalogger.log(list(topics.values()))
-        connection.client.loop()
+            datalogger_miriam.log(list(topics_miriam.values()))
+            datalogger_sara.log(list(topics_sara.values()))
+        connection_miriam.client.loop()
+        connection_sara.client.loop()
 
 
 if __name__ == '__main__':
