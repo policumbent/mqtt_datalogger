@@ -54,7 +54,7 @@ def main():
     datalogger_miriam = Logger("../log/miriam/miriam_datalogger", list(topics_miriam.keys()))
     connection_miriam = MqttHandler("miriam_datalogger_01", "broker.hivemq.com", 1883, [(t, 0) for t in topics_miriam.keys()], mqtt_callback)
 
-    datalogger_sara = Logger("../log/sara/miriam_datalogger", list(topics_sara.keys()))
+    datalogger_sara = Logger("../log/sara/sara_datalogger", list(topics_sara.keys()))
     connection_sara = MqttHandler("sara_datalogger_01", "broker.hivemq.com", 1883,
                                     [(t, 0) for t in topics_sara.keys()], mqtt_callback)
 
