@@ -1,9 +1,9 @@
 from Logger import *
 from Logger.Logger import Logger
 from MqttHandler.MqttHandler import MqttHandler
+from random import randint
 import logging
 import time
-
 
 topics_miriam = {
     "Taurus/bikedata/latitude": '-1',
@@ -43,11 +43,12 @@ topics_sara = {
 
 
 
-def mqtt_callback_myriam(client, userdata, msg):
+def mqtt_callback_miriam(client, userdata, msg):
     payload = msg.payload.decode()
     topic = msg.topic
     logging.info(f"received {payload} on {topic}")
     topics_miriam[topic] = payload
+
 
 def mqtt_callback_sara(client, userdata, msg):
     payload = msg.payload.decode()
@@ -58,21 +59,34 @@ def mqtt_callback_sara(client, userdata, msg):
 
 def main():
     datalogger_miriam = Logger("../log/miriam/miriam_datalogger", list(topics_miriam.keys()))
-    connection_miriam = MqttHandler("miriam_datalogger_01", "broker.hivemq.com", 1883, [(t, 0) for t in topics_miriam.keys()], mqtt_callback_myriam)
+    connection_miriam = MqttHandler("miriam_datalogger_"+str(randint(0, 100)), "broker.hivemq.com", 1883, [(t, 0) for t in topics_miriam.keys()], mqtt_callback_miriam)
 
     datalogger_sara = Logger("../log/sara/sara_datalogger", list(topics_sara.keys()))
-    connection_sara = MqttHandler("sara_datalogger_01", "broker.hivemq.com", 1883,
+    connection_sara = MqttHandler("sara_datalogger_"+str(randint(0, 100)), "broker.hivemq.com", 1883,
                                     [(t, 0) for t in topics_sara.keys()], mqtt_callback_sara)
+
+
+    connection_miriam.client.loop_start()
+    connection_sara.client.loop_start()
 
     start = time.time()
     while True:
         end = time.time()
-        if end - start >= 5:
+        if end - start >= 1:
             start = end
             datalogger_miriam.log(list(topics_miriam.values()))
+            print("Miriam -> " + str(list(list(topics_miriam.values()))))
             datalogger_sara.log(list(topics_sara.values()))
-        connection_miriam.client.loop()
-        connection_sara.client.loop()
+            print("Sara -> " + str(list(list(topics_sara.values()))))
+        if not connection_miriam.client.is_connected():
+            print("attempting reconnection")
+            connection_miriam.client.reconnect()
+        if not connection_sara.client.is_connected():
+            print("attempting reconnection")
+            connection_sara.client.is_connected()
+
+    connection_miriam.client.loop_stop()
+    connection_sara.client.loop_stop()
 
 
 if __name__ == '__main__':
