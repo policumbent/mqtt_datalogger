@@ -3,14 +3,14 @@ from datetime import datetime
 
 class Logger(object):
 
-    def __init__(self, file_base_name: str, topics: list):
+    def __init__(self, file_base_name: str, topics: list, csv_topics: list):
         self._file_base_name = file_base_name
         self._topics = topics
         self._filename = self._file_base_name + "_" + datetime.now().isoformat(timespec='seconds').replace("-", "_").replace(":", "_") + ".csv"
         # writing the topics header
         with open(self._filename, "w") as f:
             f.write("timestamp")
-            for t in topics:
+            for t in csv_topics:
                 f.write(f",{t}")
             f.write("\n")
 
