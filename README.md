@@ -9,9 +9,8 @@ to the open server broker.hivemq.com. During usage insert the password and usern
 
 ## How to run
 
-When you are in the project root file, run the following commands:
+When you are in the project root file, run the following command:
 
 ```Bash
-cd ..
-python mqtt_datalogger
+python datalogger
 ```

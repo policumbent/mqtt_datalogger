@@ -91,10 +91,10 @@ def mqtt_callback_sara(client, userdata, msg):
 
 
 def main():
-    datalogger_miriam = Logger("mqtt_datalogger/log/miriam/miriam_datalogger", list(topics_miriam.keys()), topics_miriam_csv)
+    datalogger_miriam = Logger("./log/miriam/miriam_datalogger", list(topics_miriam.keys()), topics_miriam_csv)
     connection_miriam = MqttHandler("miriam_datalogger_"+str(randint(0, 100)), "broker.hivemq.com", 1883, [(t, 0) for t in topics_miriam.keys()], mqtt_callback_miriam)
 
-    datalogger_sara = Logger("mqtt_datalogger/log/sara/sara_datalogger", list(topics_sara.keys()), topics_sara_csv)
+    datalogger_sara = Logger("./log/sara/sara_datalogger", list(topics_sara.keys()), topics_sara_csv)
     connection_sara = MqttHandler("sara_datalogger_"+str(randint(0, 100)), "broker.hivemq.com", 1883,
                                     [(t, 0) for t in topics_sara.keys()], mqtt_callback_sara)
 
