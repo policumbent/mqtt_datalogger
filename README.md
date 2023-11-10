@@ -6,3 +6,12 @@ related to the bike.
 
 At the moment the server and the topics are temporarely set to "Taurus/bikedata/[topic name]", and it connects
 to the open server broker.hivemq.com. During usage insert the password and username of our private server.
+
+## How to run
+
+When you are in the project root file, run the following commands:
+
+```Bash
+cd ..
+python mqtt_datalogger
+```
