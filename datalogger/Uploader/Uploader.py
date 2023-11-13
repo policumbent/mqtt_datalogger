@@ -12,23 +12,20 @@ class Uploader:
             print(sq.version)
         except Error as e:
             print(e)
-        return conn
+        return conn  
 
-    def create_table(self, table_sql):
-        """
-        creates a table with a sqlite3 string in input
-        """
+    def generate_table(self, table_sql, topics, name):
+        ''' 
+            takes topics from the csvs topics and uses as a primary key the timestamp <<<EDIT WITH THE RIGHT TIMESTAMP OF THE TWO
+            generates a string command to create a table via sqlite
+            then generates the table 
+        '''
         try: 
             c = self.conn.cursor()
             c.execute(table_sql)
         except Error as e:
-            print(e)
-
-    def generate_str_table(self, topics, name):
-        ''' 
-            takes topics from the csvs topics and uses as a primary key the timestamp <<<EDIT WITH THE RIGHT TIMESTAMP OF THE TWO
-            generates a string command to create a table via sqlite
-        '''
+            print(e) 
+            
         sql_create_table = f"CREATE TABLE IF NOT EXISTS {name} (\n"
         for topic in topics:
             if topic == 'timestamp': #'timestamp_net'

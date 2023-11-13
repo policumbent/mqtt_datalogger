@@ -1,9 +1,10 @@
 from Logger.Logger import Logger
-
+from Uploader.Uploader import Uploader
 from MqttHandler.MqttHandler import MqttHandler
 from random import randint
 import logging
 import time
+
 
 topics_miriam = {
     "Taurus/bikedata/latitude": '-1',
@@ -97,26 +98,43 @@ def main():
     datalogger_sara = Logger("./log/sara/sara_datalogger", list(topics_sara.keys()), topics_sara_csv)
     connection_sara = MqttHandler("sara_datalogger_"+str(randint(0, 100)), "broker.hivemq.com", 1883,
                                     [(t, 0) for t in topics_sara.keys()], mqtt_callback_sara)
-
-
+    #database path:
+    db = r"./test.db"
+    uploader = Uploader(db)
+    conn = uploader.create_connection(db)
+    if conn is not None:
+        miriam_table = uploader.generate_table(db, topics_miriam_csv, "Miriam")
+        sara_table = uploader.generate_table(db, topics_sara_csv, "Sara")
+    else:
+        print(f"no connection established.")
+    #generate miriam and sara table
+    
     connection_miriam.client.loop_start()
     connection_sara.client.loop_start()
+    
 
+    
     start = time.time()
-    while True:
+    while True and conn:
         end = time.time()
         if end - start >= 1:
             start = end
+            #uploading data in db and csv file for Miriam
             datalogger_miriam.log(list(topics_miriam.values()))
             print("Miriam -> " + str(list(list(topics_miriam.values()))))
+            uploader.insert_table(topics_miriam_csv,topics_miriam.values(),"Miriam")
+            
+            #uploading data in db and csv file for Sara
             datalogger_sara.log(list(topics_sara.values()))
             print("Sara -> " + str(list(list(topics_sara.values()))))
+            uploader.insert_table(topics_sara_csv,topics_sara.values(),"Sara")
         if not connection_miriam.client.is_connected():
             print("attempting reconnection")
             connection_miriam.client.reconnect()
         if not connection_sara.client.is_connected():
             print("attempting reconnection")
             connection_sara.client.is_connected()
+        
 
     connection_miriam.client.loop_stop()
     connection_sara.client.loop_stop()
